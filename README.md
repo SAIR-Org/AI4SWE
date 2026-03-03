@@ -142,12 +142,52 @@ Every term a software engineer needs — from AI to inference to agents — plac
 
 | Resource | Link |
 |---|---|
-| 📦 Interactive Artifact | [`Lecture1_AI_terms.jsx`](./Lecture1_AI_terms.jsx) |
+| 📦 Interactive Artifact | [`Lecture1_AI_terms.jsx`](./1-Introduction%20and%20Terms/Lecture1_AI_terms.jsx) |
 | 🎬 Recording | *(coming soon)* |
+
+**Demos:**
+
+| # | File | What it shows | Setup |
+|---|------|--------------|-------|
+| 01 | [`01_the_ui_is_just_an_api_call.py`](./1-Introduction%20and%20Terms/01_the_ui_is_just_an_api_call.py) | The chat UI is just an API call — same request, no browser | `uv add groq python-dotenv` |
+| 02 | [`02_api_params.py`](./1-Introduction%20and%20Terms/02_api_parms.py) | Key API params: system message, temperature, max_tokens | `uv add groq python-dotenv` |
+| 03 | [`04_tokens_are_not_words.py`](./1-Introduction%20and%20Terms/04_tokens_are_not_words.py) | Tokens ≠ words — BPE in action, English vs Arabic | `uv add tiktoken` · no API key needed |
+
+```bash
+# setup once
+uv add groq tiktoken python-dotenv
+
+# add to .env
+GROQ_API_KEY=your_key
+```
 
 ---
 
-## Format
+## Setup
+
+```bash
+# clone the repo
+git clone https://github.com/your-username/AI4SWE.git
+cd AI4SWE
+
+# install all dependencies
+uv sync
+
+# add your API keys
+cp .env.example .env
+# then fill in your keys in .env
+```
+
+**.env format:**
+```
+GROQ_API_KEY=your_key
+ANTHROPIC_API_KEY=your_key
+OPENAI_API_KEY=your_key
+```
+
+---
+
+
 
 Live lectures with shared screen. Each session combines:
 - Conceptual framing with historical context
