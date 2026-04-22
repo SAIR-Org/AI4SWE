@@ -1,19 +1,18 @@
 # =============================================================================
-# DEMO 02 — The UI Is Just An API Call
+# DEMO 02 — API Parameters Are Product Controls
 # AI4SWE · Lecture 1
 # =============================================================================
 # WHAT THIS SHOWS:
-#   ChatGPT and Claude.ai are frontends.
-#   The API is the exact same thing — minus the wrapper.
-#   The SDK handles all the HTTP, auth, and serialization for you.
+#   Part 3 of the lecture: L2 control surface.
+#   Same model, different parameters, different behavior.
 #
 # LECTURE TIE-IN:
-#   Layer L1 (UI)  ->  Layer L2 (API)
-#   You are moving one layer down the stack.
+#   Layer L2 exposes the knobs the UI hides.
+#   This is where behavior becomes engineering work.
 #
 # RUN:
 #   uv add groq python-dotenv
-#   python 01_the_ui_is_just_an_api_call.py
+#   python 02_api_parms.py
 # =============================================================================
 
 import os
@@ -22,7 +21,7 @@ from groq import Groq
 
 load_dotenv()
 
-QUESTION = "What is a large language model? Answer in 2 sentences."
+QUESTION = "What is a large language model? Answer in 2 precise sentences for software engineers."
 
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
@@ -81,4 +80,5 @@ if __name__ == "__main__":
     print("  system      -> shapes who the model is before it speaks")
     print("  temperature -> 0 means deterministic, same answer every run")
     print("  max_tokens  -> hard stop, the model cannot exceed this")
-    print("  The UI hides all of this. The API gives you full control.")
+    print("  The UI hides the knobs. The API exposes them.")
+    print("  That is why model behavior becomes product behavior.")

@@ -1,26 +1,25 @@
 # =============================================================================
-# DEMO 01 — The UI Is Just An API Call
+# DEMO 04 — Optional Vendor Swap
 # AI4SWE · Lecture 1
 # =============================================================================
 # WHAT THIS SHOWS:
-#   ChatGPT and Claude.ai are frontends.
-#   The API is the exact same thing — minus the wrapper.
-#   The SDK handles all the HTTP, auth, and serialization for you.
+#   Part 3 of the lecture: the orchestration layer can swap vendors.
+#   Different SDKs, same fundamental request pattern.
 #
 # LECTURE TIE-IN:
-#   Layer L1 (UI)  ->  Layer L2 (API)
-#   You are moving one layer down the stack.
+#   Layer L2 (Model API) -> Layer L3 (Orchestration)
+#   The provider changes, but the application pattern remains.
 #
 # RUN:
 #   pip install anthropic openai
 #   export ANTHROPIC_API_KEY=your_key
 #   export OPENAI_API_KEY=your_key
-#   python 01_the_ui_is_just_an_api_call.py
+#   python bonus_api.py
 # =============================================================================
 
 import os
 
-QUESTION = "What is a large language model? Answer in 2 sentences."
+QUESTION = "What is a large language model? Answer in 2 precise sentences for software engineers."
 
 # ── ANTHROPIC ────────────────────────────────────────────────────────────────
 
@@ -73,6 +72,6 @@ if __name__ == "__main__":
     call_gpt()
     print()
     print("── WHAT JUST HAPPENED ──────────────────────────────────")
-    print("  You just did exactly what Claude.ai and ChatGPT do.")
-    print("  The UI sends this same request. You are now one layer deeper.")
-    print("  Same model. Same response. No browser required.")
+    print("  Two different vendors, one shared application pattern.")
+    print("  This is the first step toward abstraction, routing, and multi-model systems.")
+    print("  The backend changes. The engineering problem remains.")

@@ -1,15 +1,15 @@
 # =============================================================================
-# DEMO 01 — The UI Is Just An API Call
+# DEMO 01 — The UI Is Just an API Call
 # AI4SWE · Lecture 1
 # =============================================================================
 # WHAT THIS SHOWS:
+#   Part 3 of the lecture: L1 -> L2.
 #   ChatGPT and Claude.ai are frontends.
-#   The API is the exact same thing — minus the wrapper.
-#   The SDK handles all the HTTP, auth, and serialization for you.
+#   The API is the same basic request path, minus the wrapper.
 #
 # LECTURE TIE-IN:
-#   Layer L1 (UI)  ->  Layer L2 (API)
-#   You are moving one layer down the stack.
+#   Layer L1 (Product UI)  ->  Layer L2 (Model API)
+#   The audience sees the product surface, then the request beneath it.
 #
 # RUN:
 #   uv add groq python-dotenv
@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-QUESTION = "What is a large language model? Answer in 2 sentences."
+QUESTION = "What is a large language model? Answer in 2 precise sentences for software engineers."
 
 
 def call_groq():
@@ -50,6 +50,6 @@ if __name__ == "__main__":
     call_groq()
     print()
     print("── WHAT JUST HAPPENED ──────────────────────────────────")
-    print("  You just did exactly what ChatGPT and Claude.ai do.")
-    print("  The UI sends this same request. You are now one layer deeper.")
-    print("  Same model. Same response. No browser required.")
+    print("  You just reproduced the request sitting behind a chat product.")
+    print("  The interface changes, but the request pattern is the same.")
+    print("  That is your entry point into the modern AI stack.")

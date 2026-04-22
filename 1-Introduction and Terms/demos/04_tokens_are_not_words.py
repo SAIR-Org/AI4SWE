@@ -2,6 +2,9 @@
 # AI4SWE - Lecture 1
 # RUN: uv add tiktoken
 # No API key needed
+# WHAT THIS SHOWS:
+#   Part 3 of the lecture: tokens are the unit for context windows, latency, and cost.
+#   Engineers need to reason in tokens, not in plain word counts.
 
 import tiktoken
 
@@ -38,9 +41,14 @@ if __name__ == "__main__":
     print("  Common words    -> 1 token")
     print("  Rare/long words -> multiple tokens")
     print("  Arabic gets more tokens: the BPE vocab was built mostly on English text.")
+    print()
+    print("  WHY THIS MATTERS")
+    print("  Context limits are token limits.")
+    print("  Billing is based on tokens.")
+    print("  Truncation and latency are easier to predict once you think in tokens.")
 
 
-# Apply this is https://tiktokenizer.vercel.app/ and observe the results
+# Apply this at https://tiktokenizer.vercel.app/ and observe the results
 
 """
 The cat sat on the mat.

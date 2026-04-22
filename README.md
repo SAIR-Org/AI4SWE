@@ -48,11 +48,12 @@
 
 By the end of this series you will be able to:
 
-- Use every AI term correctly — LLM, RAG, agent, inference, embedding, fine-tuning — and know exactly which layer of the stack it belongs to
+- Use every AI term correctly — LLM, RAG, agent, inference, embedding — and know exactly which layer of the stack it belongs to
 - Read any AI paper, doc, or architecture diagram and understand what it's actually saying
-- Design and build RAG pipelines, agentic systems, and LLM-powered features from scratch
-- Choose the right abstraction level for any AI task — prompt vs API vs fine-tune vs pretrain
-- Evaluate AI systems properly — not just vibe-check them
+- Build RAG pipelines, agentic systems, and LLM-powered features from scratch
+- Work with open-source models locally via HuggingFace and Ollama
+- Integrate and build tools over MCP
+- Choose the right abstraction level for any AI task — prompt vs API vs open-source vs agent
 - Reason about AI costs, latency, and architectural tradeoffs like an engineer
 
 ---
@@ -120,12 +121,11 @@ This series is a joint collaboration between two channels that cover the same AI
 |---|---------|--------|--------|
 | 01 | [From AI to Agents: The Complete Terminology Map](#lecture-1) | AI history, terminology, LLM stack, abstraction layers | ✅ Live |
 | 02 | Prompt Engineering | Techniques, patterns, applied problem solving | 🔜 Upcoming |
-| 03 | How LLMs Actually Work | Tokens, inference, context, decoding, embeddings | 🔜 Upcoming |
-| 04 | RAG & Vector Databases | Retrieval pipelines, chunking, semantic search | 🔜 Upcoming |
-| 05 | Fine-tuning | When and how — vs RAG vs prompting | 🔜 Upcoming |
-| 06 | Agentic Systems | Tools, memory, decision loops, orchestration | 🔜 Upcoming |
-| 07 | Evaluation | How to know if your AI system actually works | 🔜 Upcoming |
-| ++ | Going Deeper | AI systems design patterns, inference optimization | 🗓 Planned |
+| 03 | LLMs Under the Hood | Tokens, inference, context windows, decoding, embeddings | 🔜 Upcoming |
+| 04 | Open-Source LLMs | HuggingFace, Ollama, running models locally | 🔜 Upcoming |
+| 05 | RAG & Vector Databases | Retrieval pipelines, chunking, semantic search | 🔜 Upcoming |
+| 06 | MCP | Model Context Protocol — tools, servers, integrations | 🔜 Upcoming |
+| 07 | Agents | Tools, memory, decision loops, orchestration | 🗓 Planned |
 
 ---
 
@@ -142,16 +142,21 @@ Every term a software engineer needs — from AI to inference to agents — plac
 
 | Resource | Link |
 |---|---|
-| 📦 Interactive Artifact | [`Lecture1_AI_terms.jsx`](./1-Introduction%20and%20Terms/Lecture1_AI_terms.jsx) |
+| 📊 Slide Deck | [`lecture1.jsx`](./1-Introduction%20and%20Terms/lecture1.jsx) |
+| 🌐 Interactive Artifact | [Open in Claude](https://claude.ai/public/artifacts/9c2cd345-6c4c-408c-a2a1-9857f7037b98) |
+| 🌳 AI Tree | [Open in Claude](https://claude.ai/public/artifacts/301ea686-a15e-4e2f-9f34-9954e32c6fc9) |
+| 🌳 Bigger AI Tree | [Open in Claude](https://claude.ai/public/artifacts/da67e768-2b50-4c64-b0eb-35aff2a27d1a) |
+| 🗺 Excalidraw Diagram | [`Lecture_1.excalidraw`](./1-Introduction%20and%20Terms/Lecture_1.excalidraw) |
 | 🎬 Recording | *(coming soon)* |
 
 **Demos:**
 
 | # | File | What it shows | Setup |
 |---|------|--------------|-------|
-| 01 | [`01_the_ui_is_just_an_api_call.py`](./1-Introduction%20and%20Terms/01_the_ui_is_just_an_api_call.py) | The chat UI is just an API call — same request, no browser | `uv add groq python-dotenv` |
-| 02 | [`02_api_params.py`](./1-Introduction%20and%20Terms/02_api_parms.py) | Key API params: system message, temperature, max_tokens | `uv add groq python-dotenv` |
-| 03 | [`04_tokens_are_not_words.py`](./1-Introduction%20and%20Terms/04_tokens_are_not_words.py) | Tokens ≠ words — BPE in action, English vs Arabic | `uv add tiktoken` · no API key needed |
+| 01 | [`01_the_ui_is_just_an_api_call.py`](./1-Introduction%20and%20Terms/demos/01_the_ui_is_just_an_api_call.py) | The chat UI is just an API call — same request, no browser | `uv add groq python-dotenv` |
+| 02 | [`02_api_parms.py`](./1-Introduction%20and%20Terms/demos/02_api_parms.py) | Key API params: system message, temperature, max_tokens | `uv add groq python-dotenv` |
+| 03 | [`04_tokens_are_not_words.py`](./1-Introduction%20and%20Terms/demos/04_tokens_are_not_words.py) | Tokens ≠ words — BPE in action, English vs Arabic | `uv add tiktoken` · no API key needed |
+| 04 | [`bonus_api.py`](./1-Introduction%20and%20Terms/demos/bonus_api.py) | Same request pattern across Anthropic and OpenAI SDKs | `pip install anthropic openai` |
 
 ```bash
 # setup once
@@ -167,7 +172,7 @@ GROQ_API_KEY=your_key
 
 ```bash
 # clone the repo
-git clone https://github.com/your-username/AI4SWE.git
+git clone https://github.com/SAIR-Org/AI4SWE.git
 cd AI4SWE
 
 # install all dependencies
@@ -187,7 +192,7 @@ OPENAI_API_KEY=your_key
 
 ---
 
-
+## Format
 
 Live lectures with shared screen. Each session combines:
 - Conceptual framing with historical context
