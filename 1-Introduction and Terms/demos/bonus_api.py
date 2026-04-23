@@ -11,7 +11,7 @@
 #   The provider changes, but the application pattern remains.
 #
 # RUN:
-#   pip install anthropic openai
+#   pip install anthropic openai 
 #   export ANTHROPIC_API_KEY=your_key
 #   export OPENAI_API_KEY=your_key
 #   python bonus_api.py

@@ -155,8 +155,8 @@ Every term a software engineer needs — from AI to inference to agents — plac
 |---|------|--------------|-------|
 | 01 | [`01_the_ui_is_just_an_api_call.py`](./1-Introduction%20and%20Terms/demos/01_the_ui_is_just_an_api_call.py) | The chat UI is just an API call — same request, no browser | `uv add groq python-dotenv` |
 | 02 | [`02_api_parms.py`](./1-Introduction%20and%20Terms/demos/02_api_parms.py) | Key API params: system message, temperature, max_tokens | `uv add groq python-dotenv` |
-| 03 | [`04_tokens_are_not_words.py`](./1-Introduction%20and%20Terms/demos/04_tokens_are_not_words.py) | Tokens ≠ words — BPE in action, English vs Arabic | `uv add tiktoken` · no API key needed |
-| 04 | [`bonus_api.py`](./1-Introduction%20and%20Terms/demos/bonus_api.py) | Same request pattern across Anthropic and OpenAI SDKs | `pip install anthropic openai` |
+| 03 | [`03_tokens_are_not_words.py`](./1-Introduction%20and%20Terms/demos/03_tokens_are_not_words.py) | Tokens ≠ words — BPE in action, English vs Arabic | `uv add tiktoken` · no API key needed |
+| 04 | [`bonus_api.py`](./1-Introduction%20and%20Terms/demos/bonus_api.py) | Same request pattern across Anthropic and OpenAI SDKs | `uv sync` (already in pyproject.toml) |
 
 ```bash
 # setup once
