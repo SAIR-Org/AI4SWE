@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-QUESTION = "What is a large language model? Answer in 2 precise sentences for software engineers."
+QUESTION = "classify this text as positive or negative : 'you are a good person', show the output in JSON format"
 
 
 def call_groq():

@@ -21,7 +21,7 @@ from groq import Groq
 
 load_dotenv()
 
-QUESTION = "What is a large language model? Answer in 2 precise sentences for software engineers."
+QUESTION = "Explain the hoisting in JS"
 
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
@@ -48,10 +48,10 @@ def call_basic():
 def call_with_params():
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
-        max_tokens=50,           # hard stop — answer must be short
-        temperature=0.0,         # deterministic — same answer every run
+        max_tokens=250,           # hard stop — answer must be short
+        temperature=1.5,         # deterministic — same answer every run
         messages=[
-            {"role": "system",  "content": "You are a technical instructor. Be concise and precise."},
+            {"role": "system",  "content": "You are a principle engineer."},
             {"role": "user",    "content": QUESTION}
         ]
     )
