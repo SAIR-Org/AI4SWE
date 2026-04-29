@@ -1,5 +1,8 @@
 LECTURE 1 : 
-LEC_1 : https://claude.ai/public/artifacts/9c2cd345-6c4c-408c-a2a1-9857f7037b98
+LEC_1 : https://claude.ai/public/artifacts/9c2cd345-6c4c-408c-a2a1-9857f7037b98LEC
 AI_Tree : https://claude.ai/public/artifacts/301ea686-a15e-4e2f-9f34-9954e32c6fc9
 Bigger AI Tree : https://claude.ai/public/artifacts/da67e768-2b50-4c64-b0eb-35aff2a27d1a
 
+
+LECTURE 2 : 
+https://claude.ai/public/artifacts/d183f568-f382-403d-83d1-5a762359dc4a
