@@ -27,7 +27,7 @@
   <img src="https://img.shields.io/badge/status-active-brightgreen?style=flat-square"/>
   <img src="https://img.shields.io/badge/audience-software%20engineers-blue?style=flat-square"/>
   <img src="https://img.shields.io/badge/approach-top--down-orange?style=flat-square"/>
-  <img src="https://img.shields.io/badge/lectures-1%20ready%20%7C%201%20upcoming-brightgreen?style=flat-square"/>
+  <img src="https://img.shields.io/badge/lectures-2%20ready-brightgreen?style=flat-square"/>
 </p>
 
 <p align="center">
@@ -120,7 +120,7 @@ This series is a joint collaboration between two channels that cover the same AI
 | # | Lecture | Topics | Status |
 |---|---------|--------|--------|
 | 01 | [From AI to Agents: The Complete Terminology Map](#lecture-1) | AI history, terminology, LLM stack, abstraction layers | ✅ Ready |
-| 02 | [Context & Prompt Engineering](#lecture-2) | CE vs PE, mental model, 5 patterns, workflow, failure diagnosis | 🔜 Upcoming |
+| 02 | [Context & Prompt Engineering](#lecture-2) | CE vs PE, mental model, 5 patterns, workflow, failure diagnosis, prompt injection | ✅ Ready |
 | 03 | LLMs Under the Hood | Tokens, inference, context windows, decoding, embeddings | 🔜 Upcoming |
 | 04 | Open-Source LLMs | HuggingFace, Ollama, running models locally | 🔜 Upcoming |
 | 05 | RAG & Vector Databases | Retrieval pipelines, chunking, semantic search | 🔜 Upcoming |
@@ -178,26 +178,27 @@ Reframes "prompt engineering" as a subdomain of context engineering — the full
 | Resource | Link |
 |---|---|
 | 📊 Slide Deck | [`lecture2.jsx`](./2_Prompt_Eng/lecture2.jsx) |
-| 🌐 Interactive Artifact | *(coming soon)* |
-| 🎬 Recording | *(coming soon)* |
+| 🌐 Interactive Artifact | *(link in video description)* |
+| 🎬 Recording | *(coming soon — YouTube)* |
 
 **Demos:**
 
-| # | File | What it shows | Setup |
-|---|------|--------------|-------|
-| 01 | [`01_context_is_everything.py`](./2_Prompt_Eng/demos/01_context_is_everything.py) | Same question, 3 system prompts → 3 different models | `GROQ_API_KEY` in `.env` |
-| 02 | [`02_zero_vs_few_shot.py`](./2_Prompt_Eng/demos/02_zero_vs_few_shot.py) | Zero-shot → 1-shot → 3-shot with token cost tracking | `GROQ_API_KEY` in `.env` |
-| 03 | [`03_chain_of_thought.py`](./2_Prompt_Eng/demos/03_chain_of_thought.py) | CoT off vs on vs hidden CoT — reasoning gap is obvious | `GROQ_API_KEY` in `.env` |
-| 04 | [`04_structured_output.py`](./2_Prompt_Eng/demos/04_structured_output.py) | JSON schema extraction + server-side validation | `GROQ_API_KEY` in `.env` |
-| 05 | [`05_stateless_memory.py`](./2_Prompt_Eng/demos/05_stateless_memory.py) | Model forgets between calls; history injection fixes it | `GROQ_API_KEY` in `.env` |
-| 06 | [`06_combining_patterns.py`](./2_Prompt_Eng/demos/06_combining_patterns.py) | Full production pipeline: role + few-shot + hidden CoT + JSON | `GROQ_API_KEY` in `.env` |
-| 07 | [`07_the_ceiling.py`](./2_Prompt_Eng/demos/07_the_ceiling.py) | Prompting hits a wall; simulated RAG fixes it — seeds L5 | `GROQ_API_KEY` in `.env` |
-| Bonus | [`bonus_prompt_workflow.py`](./2_Prompt_Eng/demos/bonus_prompt_workflow.py) | Bad prompt → diagnose → iterate → measure pass rate | `GROQ_API_KEY` in `.env` |
+| # | File | What it shows |
+|---|------|--------------|
+| 01 | [`01_context_is_everything.py`](./2_Prompt_Eng/demos/01_context_is_everything.py) | Same question, 3 system prompts → 3 completely different outputs |
+| 02 | [`02_zero_vs_few_shot.py`](./2_Prompt_Eng/demos/02_zero_vs_few_shot.py) | Zero-shot → 1-shot → 3-shot with token cost tracked per variant |
+| 03 | [`03_chain_of_thought.py`](./2_Prompt_Eng/demos/03_chain_of_thought.py) | No CoT (wrong) → zero-shot CoT (correct) → hidden CoT (correct, clean) |
+| 04 | [`04_structured_output.py`](./2_Prompt_Eng/demos/04_structured_output.py) | Prose output → JSON schema → server-side validation |
+| 05 | [`05_stateless_memory.py`](./2_Prompt_Eng/demos/05_stateless_memory.py) | Statelessness proved live; history injection fixes it; chatbot loop |
+| 06 | [`06_combining_patterns.py`](./2_Prompt_Eng/demos/06_combining_patterns.py) | All 5 patterns in one production pipeline: role + few-shot + CoT + JSON |
+| 07 | [`07_the_ceiling.py`](./2_Prompt_Eng/demos/07_the_ceiling.py) | Model hallucinates private data; simulated RAG fixes it; decision tree |
+| 08 | [`08_prompt_injection.py`](./2_Prompt_Eng/demos/08_prompt_injection.py) | 4 injection techniques + prompt-level defense + intent classifier |
+| Bonus | [`bonus_prompt_workflow.py`](./2_Prompt_Eng/demos/bonus_prompt_workflow.py) | Semantic failure: framing fools the model — 3/6 → 5/6 → 6/6 |
 
 ```bash
 # No new setup needed — same GROQ_API_KEY from Lecture 1
 cd 2_Prompt_Eng/demos
-python 01_context_is_everything.py
+python3 01_context_is_everything.py
 ```
 
 ---
@@ -228,15 +229,26 @@ OPENAI_API_KEY=your_key
 
 ## Format
 
-Live lectures with shared screen. Each session combines:
-- Conceptual framing with historical context
-- Live demos on real tools and APIs
-- Hands-on exercises you follow along with
-- Interactive reference artifacts published here after each session
+Each lecture is released on YouTube and accompanied by this repo. The format:
+- Conceptual framing — the why before the how
+- Live demos on real APIs — code you can run yourself
+- Interactive reference artifacts published alongside each video
+- Full source in this repo — clone and follow along
+
+---
+
+## Where to Watch
+
+| Channel | Link |
+|---|---|
+| 🎬 YouTube — AI4SWE (Musab) | *(coming soon)* |
+| 🎬 YouTube — SAiR | *(coming soon)* |
+| 📡 Telegram — Musab | [t.me/musab_khunaijir](https://t.me/musab_khunaijir) |
+| 📡 Telegram — SAiR | [t.me/SAiR](https://t.me/+jPPlO6ZFDbtlYzU0) |
 
 ---
 
 ## Status
 
-🟡 **Active** — series in progress. New lectures added as they are delivered.  
-Watch the Telegram channels for session announcements.
+🟢 **Active** — series in progress. New lectures added as they are recorded.  
+Subscribe on YouTube or follow the Telegram channels for release announcements.
