@@ -120,7 +120,7 @@ This series is a joint collaboration between two channels that cover the same AI
 | # | Lecture | Topics | Status |
 |---|---------|--------|--------|
 | 01 | [From AI to Agents: The Complete Terminology Map](#lecture-1) | AI history, terminology, LLM stack, abstraction layers | ✅ Ready |
-| 02 | [Context & Prompt Engineering](#lecture-2) | CE vs PE, mental model, 5 patterns, workflow, failure diagnosis, prompt injection | ✅ Ready |
+| 02 | [Prompt & Context Engineering](#lecture-2) | CE vs PE, mental model, 5 patterns, workflow, failure diagnosis, prompt injection | ✅ Ready |
 | 03 | LLMs Under the Hood | Tokens, inference, context windows, decoding, embeddings | 🔜 Upcoming |
 | 04 | Open-Source LLMs | HuggingFace, Ollama, running models locally | 🔜 Upcoming |
 | 05 | RAG & Vector Databases | Retrieval pipelines, chunking, semantic search | 🔜 Upcoming |
@@ -167,7 +167,7 @@ GROQ_API_KEY=your_key
 ```
 
 <a name="lecture-2"></a>
-### Lecture 02 — Context & Prompt Engineering
+### Lecture 02 — Prompt & Context Engineering
 
 > *The context window is everything the model knows. Your job is to fill it right.*
 

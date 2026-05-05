@@ -1,4 +1,4 @@
-# Lecture 02 — Context & Prompt Engineering
+# Lecture 02 — Prompt & Context Engineering
 
 > *The context window is everything the model knows. Your job is to fill it right.*
 

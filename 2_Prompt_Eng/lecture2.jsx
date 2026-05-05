@@ -866,7 +866,7 @@ export default function Lecture2() {
       }}>
         <div>
           <div style={{ fontSize: "9px", color: C.dim, letterSpacing: "3px", marginBottom: "4px" }}>AI FOR SOFTWARE ENGINEERS — CRASH COURSE</div>
-          <div style={{ fontSize: "17px", fontWeight: "900", color: "#FFF", letterSpacing: "-0.3px" }}>Lecture 2: Context & Prompt Engineering</div>
+          <div style={{ fontSize: "17px", fontWeight: "900", color: "#FFF", letterSpacing: "-0.3px" }}>Lecture 2: Prompt & Context Engineering</div>
         </div>
         <div style={{ display: "flex", gap: "16px", fontSize: "11px", color: C.dim }}>
           <span>90 min</span>
