@@ -34,7 +34,7 @@ By the end of this session you'll be able to look at any prompting problem, diag
 | Artifact | Link |
 |---|---|
 | 🌐 Full Lecture (interactive) | *(link in video description)* |
-| 🎬 Recording | *(coming soon — YouTube)* |
+| 🎬 Recording | [Watch on YouTube](https://youtu.be/LNuNyVLFeMg?si=yfvyFWL7cWFeGagf) |
 
 ---
 
