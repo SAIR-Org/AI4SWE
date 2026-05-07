@@ -2,9 +2,11 @@
 # DEMO 02 — Zero-Shot vs Few-Shot
 # AI4SWE · Lecture 2
 # =============================================================================
-# Tone classification: zero-shot → 1-shot → 3-shot.
-# Consistency improves with examples. Token cost grows with each one.
-# In-context learning: the model routes from examples, no weight updates.
+# Commit message generation: zero-shot → instructions only → few-shot.
+# Zero-shot: inconsistent prose, no format.
+# Instructions only: format described in words — better, but types still drift.
+# Few-shot: same instructions + 3 examples — format AND vocabulary locked in.
+# The lesson: instructions tell the model the rules; examples show the decisions.
 # RUN: python 02_zero_vs_few_shot.py
 # =============================================================================
 
@@ -17,67 +19,69 @@ load_dotenv(find_dotenv())
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
 MODEL  = "llama-3.1-8b-instant"
 
-LABELS = ("formal", "casual", "aggressive")
-
-TEST_INPUTS = [
-    "We need this delivered by tomorrow or there will be consequences.",
-    "Hey, any chance you can take a look when you get a sec?",
-    "As per my previous email, please action this immediately.",
-    "lol no worries, just ping me when it's ready :)",
-    "This delay is completely unacceptable. I expect a response within the hour.",
+CHANGES = [
+    "Fixed a bug where the login form crashes when the email field is left empty",
+    "Added a loading spinner to the checkout button while the payment is processing",
+    "Removed the deprecated getUserById function and updated all callers to use findUser",
+    "Increased the database connection pool size from 10 to 50 in the production config",
+    "Added unit tests for the password reset flow",
 ]
 
 ZERO_SHOT = (
-    "Classify the tone of this message.\n"
-    "Reply with ONLY one word — formal, casual, or aggressive.\n\n"
-    "Message: \"{msg}\""
+    "Write a git commit message for this change.\n"
+    "Reply with ONLY the commit message — nothing else.\n\n"
+    "Change: \"{change}\"\n"
+    "Commit:"
 )
 
-ONE_SHOT = (
-    "Classify the tone of this message.\n"
-    "Reply with ONLY one word — formal, casual, or aggressive.\n\n"
-    "Message: \"Per our discussion, please advise at your earliest convenience.\"\n"
-    "formal\n\n"
-    "Message: \"{msg}\"\n"
+INSTRUCTIONS_ONLY = (
+    "Write a git commit message for this change.\n"
+    "Format: type(scope): short description — one line, imperative mood, max 72 chars.\n"
+    "Types: feat, fix, refactor, chore, test, docs\n"
+    "Reply with ONLY the commit message — nothing else.\n\n"
+    "Change: \"{change}\"\n"
+    "Commit:"
 )
 
-THREE_SHOT = (
-    "Classify the tone of this message.\n"
-    "Reply with ONLY one word — formal, casual, or aggressive.\n\n"
-    "Message: \"Per our discussion, please advise at your earliest convenience.\"\n"
-    "formal\n\n"
-    "Message: \"Hey can u fix this real quick? thx\"\n"
-    "casual\n\n"
-    "Message: \"This is unacceptable. Fix it now or face consequences.\"\n"
-    "aggressive\n\n"
-    "Message: \"{msg}\"\n"
+FEW_SHOT = (
+    "Write a git commit message for this change.\n"
+    "Format: type(scope): short description — one line, imperative mood, max 72 chars.\n"
+    "Types: feat, fix, refactor, chore, test, docs\n\n"
+    "EXAMPLES\n"
+    "Change: \"Add retry logic to the payment API client when it gets a 429 response\"\n"
+    "Commit: fix(payments): retry on 429 from payment API\n\n"
+    "Change: \"Move user validation logic out of the controller into a separate service\"\n"
+    "Commit: refactor(users): extract validation into UserValidationService\n\n"
+    "Change: \"Update the README with new environment variable setup instructions\"\n"
+    "Commit: docs(readme): add env var setup instructions\n\n"
+    "YOUR TASK\n"
+    "Change: \"{change}\"\n"
+    "Commit:"
 )
 
 
-def classify(prompt_template: str, msg: str) -> tuple[str, int]:
-    prompt = prompt_template.format(msg=msg)
+def generate(prompt_template: str, change: str) -> tuple[str, int]:
+    prompt   = prompt_template.format(change=change)
     response = client.chat.completions.create(
         model=MODEL,
-        max_tokens=5,
+        max_tokens=30,
         temperature=0.0,
         messages=[{"role": "user", "content": prompt}],
     )
-    raw    = response.choices[0].message.content.strip().lower()
-    answer = next((l for l in LABELS if l in raw), raw.split()[0] if raw.split() else "?")
-    return answer, response.usage.prompt_tokens
+    return response.choices[0].message.content.strip(), response.usage.prompt_tokens
 
 
 if __name__ == "__main__":
     variants = [
-        ("ZERO-SHOT", ZERO_SHOT),
-        ("1-SHOT",    ONE_SHOT),
-        ("3-SHOT",    THREE_SHOT),
+        ("ZERO-SHOT",           ZERO_SHOT),
+        ("INSTRUCTIONS ONLY",   INSTRUCTIONS_ONLY),
+        ("FEW-SHOT (3 examples)", FEW_SHOT),
     ]
     for label, template in variants:
         total = 0
         print(f"[{label}]")
-        for msg in TEST_INPUTS:
-            result, tokens = classify(template, msg)
+        for change in CHANGES:
+            result, tokens = generate(template, change)
             total += tokens
-            print(f"  {msg[:54]:54}  →  {result}")
+            print(f"  {change[:52]:52}  →  {result}")
         print(f"  prompt tokens: {total}\n")

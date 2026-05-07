@@ -17,7 +17,7 @@ By the end of this session you'll be able to look at any prompting problem, diag
 │
 └── demos/
     ├── 01_context_is_everything.py   ← Same question, 3 system prompts, 3 different models
-    ├── 02_zero_vs_few_shot.py        ← Zero-shot → 1-shot → 3-shot, with token cost tracking
+    ├── 02_zero_vs_few_shot.py        ← Zero-shot → instructions only → few-shot, with token cost tracking
     ├── 03_chain_of_thought.py        ← CoT off vs on vs hidden CoT
     ├── 04_structured_output.py       ← JSON schema extraction + server-side validation
     ├── 05_stateless_memory.py        ← Model forgets between calls; history injection fixes it
@@ -64,9 +64,9 @@ python3 demos/01_context_is_everything.py
 **File:** `demos/02_zero_vs_few_shot.py`
 
 **What it shows:**
-A tone classification task run three ways: zero-shot, 1-shot, 3-shot. Output consistency improves with examples. Token count is printed for each call — the cost/quality tradeoff is visible in the terminal.
+Commit message generation run three ways: zero-shot (no guidance), instructions only (format described in words), and few-shot (same instructions plus 3 examples). Zero-shot produces verbose inconsistent prose. Instructions alone get the format right but pick wrong types on edge cases. Few-shot locks in both format and correct type vocabulary. Token count is printed for each — the cost/quality tradeoff is visible in the terminal.
 
-**The point:** Few-shot examples are live tokens in the context window. The model routes from them when generating — that's in-context learning. More examples = better signal, but every example costs tokens on every single call. Find the minimum that gives you the consistency you need.
+**The point:** Instructions tell the model the rules. Examples show the decisions — how to apply those rules when it's not obvious. That's the specific value few-shot adds on top of a well-written instruction.
 
 **Stack layer:** L2 (Model API) — in-context learning
 

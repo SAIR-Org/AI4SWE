@@ -205,24 +205,23 @@ If not, ask the user to provide a minimal reproduction case."
     num: "02",
     title: "Zero-Shot vs Few-Shot",
     color: C.few,
-    desc: "A tone classification task. Zero-shot first, then 1-shot, then 3-shot. Output consistency improves with examples. Token count is printed for each — the cost/quality tradeoff is visible.",
-    concepts: ["In-context learning", "Output consistency", "Context window cost", "Diminishing returns"],
-    preview: `task = "Classify the tone as: formal, casual, or aggressive."
-test_input = "We need this delivered by tomorrow or there will be consequences."
+    desc: "Commit message generation run three ways: zero-shot (prose), instructions only (format right, types wrong), few-shot (format + correct types). Shows exactly what examples add on top of instructions. Token cost grows with each step.",
+    concepts: ["In-context learning", "Instructions vs examples", "Context window cost", "Type vocabulary anchoring"],
+    preview: `change = "Added unit tests for the password reset flow"
 
-# ZERO-SHOT — instruction only
-zero_shot = f"{task}\\n\\nText: \\"{test_input}\\""
+# ZERO-SHOT — no guidance
+# → "Added unit tests for password reset flow"   (prose, no structure)
 
-# FEW-SHOT — 3 examples added
-few_shot = f"""{task}
-Text: "Per our discussion, please advise." → formal
-Text: "Hey can u fix this real quick?" → casual
-Text: "This is unacceptable. Fix it now." → aggressive
+# INSTRUCTIONS ONLY — format described in words
+# → feat(test): Add unit tests for password reset flow
+#   wrong type — should be test(), not feat()
 
-Text: "{test_input}" """
+# FEW-SHOT — same instructions + 3 examples
+# → test(auth): add unit tests for password reset flow  ✓
+#   correct type and scope learned from examples
 
-# Print token counts for each — watch the cost grow
-# print_comparison(zero_shot, few_shot)`,
+# Instructions tell the model the rules.
+# Examples show the decisions.`,
   },
   {
     num: "03",

@@ -9,6 +9,7 @@
 # =============================================================================
 
 import os
+import re
 import json
 from groq import Groq
 from dotenv import load_dotenv, find_dotenv
@@ -51,8 +52,12 @@ def call(system: str, user: str) -> str:
     return response.choices[0].message.content.strip()
 
 
+def strip_fences(raw: str) -> str:
+    return re.sub(r"^```[a-z]*\n?|```$", "", raw.strip(), flags=re.MULTILINE).strip()
+
+
 def validate(raw: str) -> dict:
-    data = json.loads(raw)
+    data = json.loads(strip_fences(raw))
     assert "title" in data and isinstance(data["title"], str)
     assert data["type"] in ("feature", "fix", "refactor", "hotfix")
     assert isinstance(data["breaking"], bool)
