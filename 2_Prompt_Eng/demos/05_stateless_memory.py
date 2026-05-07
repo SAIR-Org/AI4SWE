@@ -18,7 +18,7 @@ load_dotenv(find_dotenv())
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
 MODEL  = "llama-3.1-8b-instant"
 
-MSG_A  = "My name is Silba and I'm building an AI course for software engineers with Musab."
+MSG_A  = "My name is Silva and I'm building an AI course for software engineers with Musab."
 MSG_B  = "What's my name and what am I building?"
 
 SYSTEM = "You are a concise assistant. Answer in 1-2 sentences. Be direct."
