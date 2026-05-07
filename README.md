@@ -147,7 +147,7 @@ Every term a software engineer needs — from AI to inference to agents — plac
 | 🌳 AI Tree | [Open in Claude](https://claude.ai/public/artifacts/301ea686-a15e-4e2f-9f34-9954e32c6fc9) |
 | 🌳 Bigger AI Tree | [Open in Claude](https://claude.ai/public/artifacts/da67e768-2b50-4c64-b0eb-35aff2a27d1a) |
 | 🗺 Excalidraw Diagram | [`Lecture_1.excalidraw`](./1_Introduction%20and%20Terms/Lecture_1.excalidraw) |
-| 🎬 Recording | [Watch on YouTube](https://youtu.be/LNuNyVLFeMg?si=yfvyFWL7cWFeGagf) |
+| 🎬 Recording | **[▶ Watch on YouTube](https://youtu.be/LNuNyVLFeMg?si=yfvyFWL7cWFeGagf)** |
 
 **Demos:**
 
@@ -241,7 +241,7 @@ Each lecture is released on YouTube and accompanied by this repo. The format:
 
 | Channel | Link |
 |---|---|
-| 🎬 YouTube — AI4SWE (Musab) | *(coming soon)* |
+| 🎬 YouTube — AI4SWE (Musab) | **[▶ Lecture 01 — Watch now](https://youtu.be/LNuNyVLFeMg?si=yfvyFWL7cWFeGagf)** · Lecture 02 *(coming soon)* |
 | 🎬 YouTube — SAiR | *(coming soon)* |
 | 📡 Telegram — Musab | [t.me/musab_khunaijir](https://t.me/musab_khunaijir) |
 | 📡 Telegram — SAiR | [t.me/SAiR](https://t.me/+jPPlO6ZFDbtlYzU0) |
