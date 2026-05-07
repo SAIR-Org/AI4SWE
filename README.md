@@ -142,12 +142,12 @@ Every term a software engineer needs — from AI to inference to agents — plac
 
 | Resource | Link |
 |---|---|
-| 📊 Slide Deck | [`lecture1.jsx`](./1-Introduction%20and%20Terms/lecture1.jsx) |
+| 📊 Slide Deck | [`lecture1.jsx`](./1_Introduction%20and%20Terms/lecture1.jsx) |
 | 🌐 Interactive Artifact | [Open in Claude](https://claude.ai/public/artifacts/9c2cd345-6c4c-408c-a2a1-9857f7037b98) |
 | 🌳 AI Tree | [Open in Claude](https://claude.ai/public/artifacts/301ea686-a15e-4e2f-9f34-9954e32c6fc9) |
 | 🌳 Bigger AI Tree | [Open in Claude](https://claude.ai/public/artifacts/da67e768-2b50-4c64-b0eb-35aff2a27d1a) |
-| 🗺 Excalidraw Diagram | [`Lecture_1.excalidraw`](./1-Introduction%20and%20Terms/Lecture_1.excalidraw) |
-| 🎬 Recording | *(coming soon)* |
+| 🗺 Excalidraw Diagram | [`Lecture_1.excalidraw`](./1_Introduction%20and%20Terms/Lecture_1.excalidraw) |
+| 🎬 Recording | [Watch on YouTube](https://youtu.be/LNuNyVLFeMg?si=yfvyFWL7cWFeGagf) |
 
 **Demos:**
 
@@ -186,7 +186,7 @@ Reframes "prompt engineering" as a subdomain of context engineering — the full
 | # | File | What it shows |
 |---|------|--------------|
 | 01 | [`01_context_is_everything.py`](./2_Prompt_Eng/demos/01_context_is_everything.py) | Same question, 3 system prompts → 3 completely different outputs |
-| 02 | [`02_zero_vs_few_shot.py`](./2_Prompt_Eng/demos/02_zero_vs_few_shot.py) | Zero-shot → 1-shot → 3-shot with token cost tracked per variant |
+| 02 | [`02_zero_vs_few_shot.py`](./2_Prompt_Eng/demos/02_zero_vs_few_shot.py) | Zero-shot → instructions only → few-shot with token cost tracked per variant |
 | 03 | [`03_chain_of_thought.py`](./2_Prompt_Eng/demos/03_chain_of_thought.py) | No CoT (wrong) → zero-shot CoT (correct) → hidden CoT (correct, clean) |
 | 04 | [`04_structured_output.py`](./2_Prompt_Eng/demos/04_structured_output.py) | Prose output → JSON schema → server-side validation |
 | 05 | [`05_stateless_memory.py`](./2_Prompt_Eng/demos/05_stateless_memory.py) | Statelessness proved live; history injection fixes it; chatbot loop |
