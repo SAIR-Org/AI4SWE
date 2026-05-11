@@ -27,7 +27,7 @@
   <img src="https://img.shields.io/badge/status-active-brightgreen?style=flat-square"/>
   <img src="https://img.shields.io/badge/audience-software%20engineers-blue?style=flat-square"/>
   <img src="https://img.shields.io/badge/approach-top--down-orange?style=flat-square"/>
-  <img src="https://img.shields.io/badge/lectures-2%20ready-brightgreen?style=flat-square"/>
+  <img src="https://img.shields.io/badge/lectures-3%20ready-brightgreen?style=flat-square"/>
 </p>
 
 <p align="center">
@@ -121,11 +121,10 @@ This series is a joint collaboration between two channels that cover the same AI
 |---|---------|--------|--------|
 | 01 | [From AI to Agents: The Complete Terminology Map](#lecture-1) | AI history, terminology, LLM stack, abstraction layers | ✅ Ready |
 | 02 | [Prompt & Context Engineering](#lecture-2) | CE vs PE, mental model, 5 patterns, workflow, failure diagnosis, prompt injection | ✅ Ready |
-| 03 | LLMs Under the Hood | Tokens, inference, context windows, decoding, embeddings | 🔜 Upcoming |
-| 04 | Open-Source LLMs | HuggingFace, Ollama, running models locally | 🔜 Upcoming |
-| 05 | RAG & Vector Databases | Retrieval pipelines, chunking, semantic search | 🔜 Upcoming |
-| 06 | MCP | Model Context Protocol — tools, servers, integrations | 🔜 Upcoming |
-| 07 | Agents | Tools, memory, decision loops, orchestration | 🗓 Planned |
+| 03 | [Tool Calling — Giving the Model Hands](#lecture-3) | Tool loop, dispatch, parallel calls, structured output, error handling, MCP preview | ✅ Ready |
+| 04 | Agents + MCP | ReAct loop, memory, MCP protocol, building a server | 🔜 Upcoming |
+| 05 | RAG & Vector Databases | Retrieval pipelines, chunking, semantic search | 🗓 Planned |
+| 06 | Open-Source LLMs | HuggingFace, Ollama, running models locally | 🗓 Planned |
 
 ---
 
@@ -199,6 +198,44 @@ Reframes "prompt engineering" as a subdomain of context engineering — the full
 # No new setup needed — same GROQ_API_KEY from Lecture 1
 cd 2_Prompt_Eng/demos
 python3 01_context_is_everything.py
+```
+
+<a name="lecture-3"></a>
+### Lecture 03 — Tool Calling: Giving the Model Hands
+
+> *In L2 the model answered questions. In L3 it takes actions.*
+
+Teaches the full tool calling primitive end-to-end — the mental model, the loop, multi-tool dispatch, parallel execution, structured output as a guarantee, and error handling. Closes with a preview of MCP and the ReAct agent loop.
+
+**Covers:** 3 generations (Raw API → Tool Calling → MCP) · The tool calling loop · Descriptions as dispatch logic · Parallel tool execution · Extraction tool pattern · Error recovery · LangChain introduction · Gemini free tier swap
+
+| Resource | Link |
+|---|---|
+| 📊 Slide Deck | [`lecture3.jsx`](./3_Tool_Calling/lecture3.jsx) |
+| 🎬 Recording | *(coming soon — YouTube)* |
+
+**Demos:**
+
+| # | File | What it shows |
+|---|------|--------------|
+| 01 | [`01_first_tool_call.py`](./3_Tool_Calling/demos/01_first_tool_call.py) | Hallucination vs grounded answer — real Open-Meteo API, full loop |
+| 02 | [`02_tool_dispatch.py`](./3_Tool_Calling/demos/02_tool_dispatch.py) | 3 tools, 3 query types — model routes correctly, zero dispatch code |
+| 03 | [`03_parallel_calls.py`](./3_Tool_Calling/demos/03_parallel_calls.py) | 3 parallel HTTP calls vs sequential — real speedup measured |
+| 04 | [`04_structured_output_upgrade.py`](./3_Tool_Calling/demos/04_structured_output_upgrade.py) | Prompt-based JSON (request) vs extraction tool (guarantee) |
+| 05 | [`05_error_handling.py`](./3_Tool_Calling/demos/05_error_handling.py) | Tool fails → error returned → model recovers gracefully |
+| 💡 | [`bonus_langchain_intro.py`](./3_Tool_Calling/demos/bonus_langchain_intro.py) | What LangChain wraps and why this course goes raw |
+| 🌐 | [`bonus_gemini_test.py`](./3_Tool_Calling/demos/bonus_gemini_test.py) | Same code, free Gemini API — 3-line provider swap |
+
+```bash
+# Same GROQ_API_KEY from L1/L2 — no new setup needed
+cd 3_Tool_Calling/demos
+python 01_first_tool_call.py
+
+# LangChain bonus only:
+uv add langchain-openai langchain-anthropic langchain-core langchain
+
+# Gemini bonus only:
+# Add GEMINI_API_KEY to .env (free at aistudio.google.com)
 ```
 
 ---
