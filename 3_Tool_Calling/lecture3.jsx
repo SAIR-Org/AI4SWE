@@ -346,26 +346,32 @@ if response.stop_reason == "tool_use":
     num:   "02",
     title: "The Model as Dispatcher",
     color: C.dispatch,
-    desc:  "Three tools defined. Query needs two of them. Model picks correctly — zero dispatch code. Part 2: swap to vague descriptions → wrong tool, same query. The description IS the routing logic.",
+    desc:  "Three tools defined. Three different queries — one routes to get_order_status, one to search_docs, one calls no tool at all. Zero dispatch code written. The model reads descriptions and routes.",
     concepts: [
-      "Multi-tool definition",
-      "Model routes by description",
-      "No if/else dispatch in your code",
-      "Vague vs engineered descriptions",
-      "Routing failure is silent — test it",
+      "Multi-tool definition with distinct descriptions",
+      "Model routes by description — no if/else needed",
+      "No-tool case handled automatically",
+      "Descriptions are the routing table",
+      "TOOL_MAP maps name → Python function",
     ],
-    preview: `# Three tools. One query. Zero dispatch code.
-QUERY = "Status of order #4421 and who placed it?"
+    preview: `QUERIES = [
+    "What's the status of order #4421?",  # → get_order_status
+    "How does the return policy work?",    # → search_docs
+    "What's the capital of France?",       # → no tool called
+]
 
-# CLEAR descriptions → model routes correctly
-calls = get_tool_calls(TOOLS_CLEAR, QUERY)
-# → [get_order_status, get_user_profile]   ✓
+# One run() function handles all three
+def run(query: str) -> str:
+    response = client.chat.completions.create(
+        model=MODEL, tools=TOOLS, messages=[system, user]
+    )
+    if not response.choices[0].message.tool_calls:
+        return response.choices[0].message.content  # direct answer
 
-# VAGUE descriptions → same model, same query
-calls = get_tool_calls(TOOLS_VAGUE, QUERY)
-# → [search_docs]  ✗  or  []  ✗
-
-# Only descriptions changed. Nothing else.`,
+    # dispatch to TOOL_MAP — zero branching code written by you
+    for tc in response.choices[0].message.tool_calls:
+        result = TOOL_MAP[tc.function.name](**json.loads(tc.function.arguments))
+        ...`,
   },
   {
     num:   "03",
@@ -425,29 +431,88 @@ response = client.messages.create(
     num:   "05",
     title: "Error Handling in the Loop",
     color: C.error,
-    desc:  "Tool calls a flaky API — success and failure shown side by side. Return is_error=True in tool_result. Model adapts gracefully. The loop never crashes. Never swallow errors silently.",
+    desc:  "Tool calls a flaky API — success and failure shown side by side. Return the error as the tool result content string. Model adapts gracefully. The loop never crashes. Never swallow errors silently.",
     concepts: [
-      "is_error=True in tool_result",
-      "Model recovery behavior",
-      "Loop continues on failure",
-      "No crash, no hallucination",
-      "Production error pattern",
+      "Error as plain content string — loop keeps running",
+      "Model reads the error and recovers gracefully",
+      "Always close the loop — even on failure",
+      "Silent swallow → model hallucinates",
+      "System prompt controls recovery behavior",
     ],
     preview: `try:
-    result   = get_account_balance(**block.input)
-    content  = json.dumps(result)
-    is_error = False
+    content = json.dumps(get_account_balance(account_id, fail=fail))
 except Exception as e:
-    content  = str(e)   # "upstream timeout"
-    is_error = True
+    content = f"Error: {e}"   # "Error: upstream banking service unavailable"
 
-# Always inject — even on failure
-{"type": "tool_result", "tool_use_id": id,
- "content": content, "is_error": is_error}
+# Always inject — success or failure
+messages = messages + [
+    choice.message,
+    {"role": "tool", "tool_call_id": tc.id, "content": content},
+]
 
-# Model sees the error and responds:
-# "I wasn't able to fetch the balance due to a temporary
-#  service issue. Please try again shortly."`,
+# Success → "Your balance is 12,450.75 ETB."
+# Failure → "I apologize, but the service is temporarily unavailable."
+# Loop never crashed. Model adapted.`,
+  },
+  {
+    num:   "06",
+    title: "Custom Logic as Tools",
+    color: "#10B981",
+    desc:  "Any Python function can be a tool. An in-memory task manager — add_task, list_tasks, mark_done, get_stats — driven entirely by the model. Real state mutation. The model never sees the TASKS dict.",
+    concepts: [
+      "Your own functions as tools — not just external APIs",
+      "Real state mutation via tool calls",
+      "Natural language → Python dispatch via TOOL_MAP",
+      "Model drives your code; your code owns the data",
+      "Model never accesses the data store directly",
+    ],
+    preview: `TASKS: dict[str, dict] = {}  # model never sees this
+
+def add_task(title: str, priority: str = "medium") -> dict:
+    task_id = str(uuid.uuid4())[:8]
+    TASKS[task_id] = {"title": title, "priority": priority, "status": "pending"}
+    return {"added": task_id, "title": title}
+
+def mark_done(title: str) -> dict:
+    for task in TASKS.values():
+        if title.lower() in task["title"].lower() and task["status"] == "pending":
+            task["status"] = "done"
+            return {"marked_done": task["title"]}
+    return {"error": f"no pending task matching '{title}'"}
+
+# Model calls add_task("Fix login bug", "high")
+# Model calls mark_done("Fix login bug")
+# State changes. Model reads results. Answers.`,
+  },
+  {
+    num:   "07",
+    title: "The Agent Loop",
+    color: C.react,
+    desc:  "The while loop that turns tool calling into an agent. The model keeps calling tools until it has enough to answer — chaining calls across iterations. Reason → Act → Observe → Reason. You own the loop.",
+    concepts: [
+      "MAX_ITERATIONS safety cap — always required",
+      "finish_reason drives termination",
+      "Model chains tool calls across iterations",
+      "Result of one call informs the next",
+      "ReAct pattern: Reason → Act → Observe",
+    ],
+    preview: `MAX_ITERATIONS = 10  # always cap agent loops
+
+def agent(query: str) -> str:
+    messages = [system, user_query]
+    for _ in range(MAX_ITERATIONS):
+        response   = client.chat.completions.create(model=MODEL, tools=TOOLS, messages=messages)
+        tool_calls = response.choices[0].message.tool_calls or []
+
+        if not tool_calls:
+            return response.choices[0].message.content  # model is done
+
+        messages.append(response.choices[0].message)
+        for tc in tool_calls:
+            result = TOOL_MAP[tc.function.name](**json.loads(tc.function.arguments or "{}"))
+            messages.append({"role": "tool", "tool_call_id": tc.id, "content": json.dumps(result)})
+
+    return "[agent stopped — hit MAX_ITERATIONS]"`,
   },
   {
     num:   "Framework",
@@ -755,7 +820,7 @@ function CodeChapter() {
       <div style={{ marginBottom: "36px" }}>
         <div style={{ fontSize: "11px", color: C.muted, letterSpacing: "3px", marginBottom: "12px" }}>CHAPTER 03 — CODE LAB</div>
         <h2 style={{ fontSize: "24px", fontWeight: "900", color: "#FFF", marginBottom: "12px", lineHeight: 1.2 }}>
-          Five demos. Each one proves a concept.
+          Seven demos. Each one proves a concept.
         </h2>
         <p style={{ fontSize: "14px", color: C.muted, lineHeight: 1.7, maxWidth: "580px" }}>
           Every demo is a before/after. The diff teaches. Run alongside the lecture — not after.
@@ -872,7 +937,7 @@ def get_weather(location: str) -> str:
 const TABS = [
   { id: "frame", label: "01 — The Frame", sub: "3 generations, mental model, loop", icon: "⚙", color: C.accent },
   { id: "craft", label: "02 — The Craft", sub: "6 concepts + ReAct preview",        icon: "🔧", color: C.dispatch },
-  { id: "code",  label: "03 — Code Lab",  sub: "5 demos + LangChain + Gemini",        icon: "⌨", color: C.parallel },
+  { id: "code",  label: "03 — Code Lab",  sub: "7 demos + LangChain bonus",           icon: "⌨", color: C.parallel },
 ];
 
 export default function Lecture3() {
@@ -899,7 +964,7 @@ export default function Lecture3() {
           <span>·</span>
           <span>6 concepts</span>
           <span>·</span>
-          <span>5 demos + 2 extras</span>
+          <span>7 demos + 1 extra</span>
         </div>
       </div>
 

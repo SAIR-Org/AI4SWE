@@ -17,34 +17,8 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
-MODEL  = "llama-3.1-8b-instant"   # fast + low token cost — swap to llama-3.3-70b-versatile for best quality
+MODEL  = "llama-3.1-8b-instant"
 
-QUESTION = "What's the weather like in Addis Ababa right now?"
-
-TOOLS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_weather",
-            "description": (
-                "Get the current weather conditions for a city. "
-                "Call this when the user asks about weather, temperature, or conditions in a location."
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "location": {
-                        "type": "string",
-                        "description": "City name, e.g. 'Addis Ababa'",
-                    }
-                },
-                "required": ["location"],
-            },
-        },
-    }
-]
-
-# City coordinates for Open-Meteo (free, no API key needed)
 CITY_COORDS = {
     "Addis Ababa": (9.03, 38.74),
     "London":      (51.51, -0.13),
@@ -58,94 +32,82 @@ WMO_CONDITIONS = {
     95: "thunderstorm",
 }
 
-# TOOL_MAP — dispatch by name. Add new tools here, not in the loop.
+TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": (
+                "Get the current weather conditions for a city. "
+                "Call this when the user asks about weather, temperature, or conditions in a location."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {"type": "string", "description": "City name, e.g. 'Addis Ababa'"}
+                },
+                "required": ["location"],
+            },
+        },
+    }
+]
+
+
 def get_weather(location: str) -> dict:
     coords = CITY_COORDS.get(location)
     if not coords:
         return {"error": f"unknown location: {location}"}
-
     lat, lon = coords
-    url = (
+    url  = (
         f"https://api.open-meteo.com/v1/forecast"
         f"?latitude={lat}&longitude={lon}"
-        f"&current=temperature_2m,relative_humidity_2m,weathercode"
-        f"&forecast_days=1"
+        f"&current=temperature_2m,relative_humidity_2m,weathercode&forecast_days=1"
     )
-    data    = requests.get(url, timeout=5).json()["current"]
-    code    = data["weathercode"]
+    data = requests.get(url, timeout=5).json()["current"]
     return {
         "location":  location,
         "temp_c":    data["temperature_2m"],
         "humidity":  data["relative_humidity_2m"],
-        "condition": WMO_CONDITIONS.get(code, f"code {code}"),
+        "condition": WMO_CONDITIONS.get(data["weathercode"], f"code {data['weathercode']}"),
     }
 
-TOOL_MAP = {
-    "get_weather": get_weather,
-}
+
+TOOL_MAP = {"get_weather": get_weather}
+
+SYSTEM = "You are a helpful weather assistant. Use tool results to answer concisely."
 
 
-def execute_tool(name: str, args: dict) -> dict:
-    fn = TOOL_MAP.get(name)
-    if fn is None:
-        raise ValueError(f"unknown tool: {name}")
-    return fn(**args)
-
-
-SYSTEM = "You are a helpful weather assistant. When you receive tool results, use them to answer the user's question directly and concisely."
-
-def run_tool_loop(messages: list, max_iterations: int = 10) -> str:
-    for iteration in range(max_iterations):
+def run(messages: list) -> str:
+    for _ in range(10):
         response = client.chat.completions.create(
             model=MODEL,
             tools=TOOLS,
             messages=[{"role": "system", "content": SYSTEM}] + messages,
         )
-
         choice = response.choices[0]
 
-        # Model finished — return the text answer
-        if choice.finish_reason == "stop":
+        if choice.finish_reason == "stop" or not choice.message.tool_calls:
             return choice.message.content
 
-        # Collect all tool calls from this response
-        tool_calls = choice.message.tool_calls or []
-        if not tool_calls:
-            return choice.message.content
-
-        # Append assistant message (contains tool_calls)
         messages = messages + [choice.message]
+        for tc in choice.message.tool_calls:
+            args   = json.loads(tc.function.arguments)
+            result = TOOL_MAP[tc.function.name](**args)
+            messages = messages + [{"role": "tool", "tool_call_id": tc.id, "content": json.dumps(result)}]
 
-        # Execute each tool and collect results
-        for tool_call in tool_calls:
-            name   = tool_call.function.name
-            args   = json.loads(tool_call.function.arguments)
-            print(f"  [iter {iteration + 1}] tool called: {name}({args})")
-            result = execute_tool(name, args)
-            print(f"  [iter {iteration + 1}] tool result: {result}")
-
-            messages = messages + [{
-                "role":         "tool",
-                "tool_call_id": tool_call.id,
-                "content":      json.dumps(result),
-            }]
-
-    raise RuntimeError(f"tool loop exceeded {max_iterations} iterations")
+    raise RuntimeError("tool loop exceeded max iterations")
 
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print(f"Question: {QUESTION}\n")
+    question = "What's the weather like in Addis Ababa right now?"
 
-    # BEFORE — no tools, model hallucinates
-    print("[BEFORE — no tools]")
+    # Without tools — model guesses
     raw = client.chat.completions.create(
         model=MODEL,
-        messages=[{"role": "user", "content": QUESTION}],
+        messages=[{"role": "user", "content": question}],
     )
-    print(f"  → {raw.choices[0].message.content}\n")
+    print("Without tools:", raw.choices[0].message.content)
+    print()
 
-    # AFTER — tool defined, loop runs
-    print("[AFTER — get_weather tool defined]")
-    answer = run_tool_loop([{"role": "user", "content": QUESTION}])
-    print(f"  → {answer}")
+    # With tools — model calls get_weather, gets real data
+    print("With tools:", run([{"role": "user", "content": question}]))

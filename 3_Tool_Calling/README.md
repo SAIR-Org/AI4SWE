@@ -17,19 +17,20 @@ By the end of this session you'll be able to define tools, run the full tool cal
 │
 └── demos/
     ├── 01_first_tool_call.py          ← Hallucination vs grounded answer — real Open-Meteo API
-    ├── 02_tool_dispatch.py            ← 3 tools, 3 query types, zero dispatch code
+    ├── 02_tool_dispatch.py            ← 3 tools, 3 query types, full execution loop
     ├── 03_parallel_calls.py           ← Sequential vs parallel execution, real speedup
     ├── 04_structured_output_upgrade.py ← Prompt JSON (request) vs extraction tool (guarantee)
     ├── 05_error_handling.py           ← Tool fails → error returned → model recovers
+    ├── 06_custom_logic.py             ← Your own functions as tools — real state, real logic
+    ├── 07_agent_loop.py               ← The while loop that turns tool calling into an agent
     ├── bonus_langchain_intro.py       ← What LangChain wraps and why we go raw
-    └── bonus_gemini_test.py           ← Same code, free Gemini API, 3-line swap
 ```
 
 ---
 
 ## The Demos
 
-Five core demos + two bonus. Each one is a before/after — the diff does the teaching. Run alongside the lecture.
+Seven core demos + two bonus. Each one is a before/after — the diff does the teaching. Run alongside the lecture.
 
 ---
 
@@ -51,7 +52,7 @@ python 01_first_tool_call.py
 **File:** `demos/02_tool_dispatch.py`
 
 **What it shows:**
-Three tools defined: `search_docs`, `get_user_profile`, `get_order_status`. Three different queries — one about an order, one about a policy, one about France. The model routes each query to the right tool, or makes no tool call at all for the France question. Zero dispatch logic in your code.
+Three tools defined: `search_docs`, `get_user_profile`, `get_order_status` — each backed by a real implementation with mock data. Three different queries — one about an order, one about a policy, one about France. The model routes each query to the right tool, executes it, and returns a real answer. Zero dispatch logic in your code.
 
 **The point:** You don't write dispatch logic. You write descriptions. The model reads them and routes. Your tool descriptions are your routing table.
 
@@ -103,6 +104,34 @@ python 05_error_handling.py
 
 ---
 
+### Demo 06 — Custom Logic as Tools
+**File:** `demos/06_custom_logic.py`
+
+**What it shows:**
+An in-memory task manager built from four plain Python functions: `add_task`, `list_tasks`, `mark_done`, `get_stats`. Each function contains real business logic — ID generation, filtering, sorting, stats computation. The model drives these functions via natural language: "Add a high-priority task, mark the urgent one done, show me the stats." Your code runs. State changes. The model reads the results and answers.
+
+**The point:** External APIs are not the only thing you wire up as tools. Any Python function — database queries, file operations, custom calculations, your own business logic — can be a tool. This is what integrating Claude into a real application actually looks like.
+
+```bash
+python 06_custom_logic.py
+```
+
+---
+
+### Demo 07 — The Agent Loop
+**File:** `demos/07_agent_loop.py`
+
+**What it shows:**
+An explicit `while True` loop where the model keeps calling tools until `finish_reason == "stop"`. A shopping assistant with four tools (`list_products`, `check_inventory`, `get_price`, `apply_discount`). Three scenarios of increasing complexity: a single-tool lookup, a multi-step purchase flow, and an open-ended query where the model must first explore available products before answering.
+
+**The point:** A single tool call answers one question. The agent loop lets the model reason across multiple steps — each tool result informs the next tool call. The loop terminates when the model has enough to answer. This is the ReAct pattern. L4 gives it memory, planning, and persistence.
+
+```bash
+python 07_agent_loop.py
+```
+
+---
+
 ### Bonus — LangChain Introduction
 **File:** `demos/bonus_langchain_intro.py`
 
@@ -118,21 +147,6 @@ python bonus_langchain_intro.py
 
 ---
 
-### Bonus — Gemini Free Tier
-**File:** `demos/bonus_gemini_test.py`
-
-**What it shows:**
-Demo 01 run against Google's Gemini 2.0 Flash instead of Groq. Three lines change — the client, base URL, and model name. Everything else is identical. Confirms the OpenAI-compatible format works across providers.
-
-**The point:** The tool calling code you write is provider-agnostic. Swap 3 lines, same code runs on Groq, Gemini, DeepSeek, or any OpenAI-compatible provider.
-
-```bash
-# Requires: GEMINI_API_KEY in .env (free at aistudio.google.com — no payment needed)
-python bonus_gemini_test.py
-```
-
----
-
 ## Setup
 
 ```bash
@@ -143,11 +157,6 @@ python 01_first_tool_call.py
 # LangChain bonus only:
 uv add langchain-openai langchain-anthropic langchain-core langchain
 
-# Gemini bonus only:
-# 1. Go to aistudio.google.com → Get API Key (free, Google account only)
-# 2. Add to .env: GEMINI_API_KEY=your_key_here
-python bonus_gemini_test.py
-```
 
 **API format:** L3 uses the OpenAI-compatible format (Groq). This is the industry standard — Groq, DeepSeek, Qwen, OpenRouter all speak this format:
 - Tool results use `role: "tool"`
@@ -168,9 +177,11 @@ python bonus_gemini_test.py
 | **Parallel Calls** | Multiple tool calls per response. Always iterate all. Execute in parallel. |
 | **Tool Choice** | auto / required / forced — and the extraction pattern for schema guarantees |
 | **Error Handling** | Return error as content. Loop never crashes. Model handles recovery. |
-| **ReAct Preview** | The while loop that turns tool calling into an agent. That's L4. |
+| **Custom Logic** | Any Python function can be a tool — state, business rules, databases |
+| **Agent Loop** | The while loop that turns tool calling into an agent. That's L4. |
+| **ReAct Preview** | Reason → Act → Observe → Reason. The pattern behind every agent. |
 | **MCP Preview** | One server, any client, auto-discovery. That's L4. |
 
 ---
 
-*Part of the [AI4SWE](https://github.com/SAIR-Org/AI4SWE) series — AI Engineering for Software Engineers.*
+Part of the [AI4SWE](https://github.com/SAIR-Org/AI4SWE) series — AI Engineering for Software Engineers.

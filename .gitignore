@@ -7,3 +7,4 @@ __pycache__/
 .venv/
 2_Prompt_Eng/demos/DEMO_SCRIPT.md
 3_Tool_Calling/demos/DEMO_SCRIPT.md
+3_Tool_Calling/docs/

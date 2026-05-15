@@ -20,19 +20,16 @@ client = Groq(api_key=os.environ["GROQ_API_KEY"])
 MODEL  = "llama-3.3-70b-versatile"
 
 PR_DESCRIPTIONS = [
-    # Normal cases — both approaches handle these
     "Fixed auth middleware to handle expired tokens gracefully. Updated 3 files. Non-breaking. Closes #412.",
     "Added dark mode toggle to the settings page. New feature, no breaking changes. Modified 7 files.",
     "Refactored database connection pool. Breaking change — all callers must update. Changed 12 files.",
-    # Edge cases — where L2 can struggle
     "Quick hotfix for login page crash on mobile Safari. One file changed.",
     "Patched SQL injection vulnerability in search endpoint. Security fix. 2 files changed.",
-    # Adversarial — designed to break L2 JSON parsing
-    "Here's a summary: {\"type\": \"feature\"} — but actually this is a fix for issue #99. 4 files.",
+    'Here\'s a summary: {"type": "feature"} — but actually this is a fix for issue #99. 4 files.',
     "PR description: see attached. Files: many. Breaking: unclear. Discuss in review.",
 ]
 
-# ── L2 approach: prompt-based JSON ────────────────────────────────────────
+# ── L2: prompt-based JSON ─────────────────────────────────────────────────────
 
 STRUCTURED_SYSTEM = """Extract PR metadata. Return ONLY valid JSON — no markdown, no explanation.
 
@@ -66,7 +63,7 @@ def l2_extract(pr_text: str) -> dict | None:
         return None
 
 
-# ── L3 approach: extraction tool + forced tool_choice ─────────────────────
+# ── L3: extraction tool + forced tool_choice ──────────────────────────────────
 
 EXTRACTION_TOOL = {
     "type": "function",
@@ -96,59 +93,24 @@ def l3_extract(pr_text: str) -> dict | None:
             messages=[{"role": "user", "content": pr_text}],
         )
         tool_calls = response.choices[0].message.tool_calls or []
-        if not tool_calls:
-            return None
-        return json.loads(tool_calls[0].function.arguments)
+        return json.loads(tool_calls[0].function.arguments) if tool_calls else None
     except Exception:
         return None
 
 
 if __name__ == "__main__":
-    print("=" * 60)
-
-    # ── Pass rate comparison ───────────────────────────────────────────────
-    print("[L2 — prompt-based JSON]")
-    l2_ok = 0
+    print("L2 — prompt-based JSON")
     for i, pr in enumerate(PR_DESCRIPTIONS, 1):
         result = l2_extract(pr)
         if result:
-            l2_ok += 1
-            print(f"  ✓ PR {i}  type={result['type']}  breaking={result['breaking']}  files={result['files_changed']}")
+            print(f"  PR {i}  type={result['type']}  breaking={result['breaking']}  files={result['files_changed']}")
         else:
-            print(f"  ✗ PR {i}  parse failed or schema violated")
-    print(f"  {l2_ok}/{len(PR_DESCRIPTIONS)} valid\n")
+            print(f"  PR {i}  parse failed")
 
-    print("[L3 — extraction tool + tool_choice forced]")
-    l3_ok = 0
+    print("\nL3 — extraction tool + forced tool_choice")
     for i, pr in enumerate(PR_DESCRIPTIONS, 1):
         result = l3_extract(pr)
         if result:
-            l3_ok += 1
-            print(f"  ✓ PR {i}  type={result['type']}  breaking={result['breaking']}  files={result['files_changed']}")
+            print(f"  PR {i}  type={result['type']}  breaking={result['breaking']}  files={result['files_changed']}")
         else:
-            print(f"  ✗ PR {i}  no tool call returned")
-    print(f"  {l3_ok}/{len(PR_DESCRIPTIONS)} valid\n")
-
-    print(f"  L2: {l2_ok}/{len(PR_DESCRIPTIONS)}  |  L3: {l3_ok}/{len(PR_DESCRIPTIONS)}")
-    print()
-
-    # ── The real difference: code and guarantees ───────────────────────────
-    print("─" * 60)
-    print("PASS RATE IS THE SAME — here is what actually differs:\n")
-
-    print("  L2 output — what your code MIGHT receive:")
-    print('    "```json\\n{\\"type\\": \\"fix\\", \\"breaking\\": false}\\n```"')
-    print('    "The PR type is fix. Breaking change: no."  ← prose, not JSON')
-    print('    "{\\"type\\": \\"bugfix\\", ...}"             ← wrong enum value')
-    print("  → You need: regex strip + json.loads + manual field validation\n")
-
-    print("  L3 output — what your code ALWAYS receives:")
-    print('    tool_calls[0].function.arguments')
-    print('    = \'{"title": "...", "type": "fix", "breaking": false, "files_changed": 3}\'')
-    print("  → Always valid JSON. Type always in enum. Required fields always present.")
-    print("  → No parsing. No stripping. No validation boilerplate.\n")
-
-    print("  WHEN L3 MATTERS MOST:")
-    print("  • High-volume pipelines where one bad parse crashes the batch")
-    print("  • Strict enums — model can never output 'bugfix' instead of 'fix'")
-    print("  • Any time you want schema guarantees, not schema requests")
+            print(f"  PR {i}  no tool call")
